@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <img src="./assets/images/logo.png">
     {{#router}}
     <router-view/>
     {{else}}
@@ -11,7 +11,7 @@
 
 <script>
 {{#unless router}}
-import HelloWorld from './components/HelloWorld'
+import HelloWorld from './HelloWorld'
 
 {{/unless}}
 export default {
