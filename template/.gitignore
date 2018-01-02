@@ -1,15 +1,35 @@
+# include all hidden files except the gitignore file
+.*
+!/.*ignore
+!/.*rc
+!/.*js
+!/.*json
+!/.*config
+
+# log files
+*.log*
+
+# Mac OSX Finder
 .DS_Store
+
+# node modules
 node_modules/
+
+# bower components
+bower_components/
+
+# backup zip
+/backup/
+
+# distribution
 /dist/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+
+# test
 {{#unit}}
 /test/unit/coverage/
 {{/unit}}
 {{#e2e}}
 /test/e2e/reports/
-selenium-debug.log
 {{/e2e}}
 
 # Editor directories and files

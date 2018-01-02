@@ -10,6 +10,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const AssetsWebpackPlugin = require('assets-webpack-plugin')
+const entries = require('./helper/entries')
+const banner = require('../config/custom/banner')
 
 const env = {{#if_or unit e2e}}process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -26,13 +29,19 @@ const webpackConfig = merge(baseWebpackConfig, {
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {
     path: config.build.assetsRoot,
-    filename: utils.assetsPath('js/[name].[chunkhash].js'),
-    chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+    filename: utils.assetsPath('js/[name].[chunkhash:7].js'),
+    chunkFilename: utils.assetsPath('js/[id].[chunkhash:7].js')
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
+    }),
+    // inject build information banner to file
+    // see: https://webpack.js.org/plugins/banner-plugin/
+    new webpack.BannerPlugin({
+      banner: banner,
+      raw: true // use custom string text banner
     }),
     new UglifyJsPlugin({
       uglifyOptions: {
@@ -45,10 +54,10 @@ const webpackConfig = merge(baseWebpackConfig, {
     }),
     // extract css into its own file
     new ExtractTextPlugin({
-      filename: utils.assetsPath('css/[name].[contenthash].css'),
+      filename: utils.assetsPath('css/[name].[contenthash:7].css'),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
-      // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`, 
+      // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,
       // increasing file size: https://github.com/vuejs-templates/webpack/issues/1110
       allChunks: true,
     }),
@@ -59,26 +68,32 @@ const webpackConfig = merge(baseWebpackConfig, {
         ? { safe: true, map: { inline: false } }
         : { safe: true }
     }),
-    // generate dist index.html with correct asset hash for caching.
+    // generate dist entries html with correct asset hash for caching.
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
-    new HtmlWebpackPlugin({
-      filename: {{#if_or unit e2e}}process.env.NODE_ENV === 'testing'
-        ? 'index.html'
-        : {{/if_or}}config.build.index,
-      template: 'index.html',
-      inject: true,
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true
-        // more options:
-        // https://github.com/kangax/html-minifier#options-quick-reference
-      },
-      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency'
-    }),
-    // keep module.id stable when vendor modules does not change
+    ...(function () {
+      return entries([])
+        .reduce((pages, entry) => {
+          pages.push(new HtmlWebpackPlugin({
+            filename: {{#if_or unit e2e}}process.env.NODE_ENV === 'testing'
+              ? 'index.html'
+              : {{/if_or}}`${entry}.html`,
+            template: `./src/entries/${entry}/index.html`,
+            chunks: [ 'manifest', 'vendor', 'commons', entry ],
+            inject: true,
+            // minify: {
+            //   removeComments: true,
+            //   collapseWhitespace: true,
+            //   removeAttributeQuotes: true
+            //   // more options:
+            //   // https://github.com/kangax/html-minifier#options-quick-reference
+            // },
+            chunksSortMode: 'manual'
+          }))
+          return pages
+        }, [])
+    })(),
+    // keep module.id stable when vender modules does not change
     new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting
     new webpack.optimize.ModuleConcatenationPlugin(),
@@ -89,12 +104,18 @@ const webpackConfig = merge(baseWebpackConfig, {
         // any required modules inside node_modules are extracted to vendor
         return (
           module.resource &&
-          /\.js$/.test(module.resource) &&
+          /\.(css|js)$/.test(module.resource) &&
           module.resource.indexOf(
             path.join(__dirname, '../node_modules')
           ) === 0
         )
       }
+    }),
+    // split entries commons js into its own file
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'commons',
+      chunks: entries([]),
+      minChunks: 2
     }),
     // extract webpack runtime and module manifest to its own file in order to
     // prevent vendor hash from being updated whenever app bundle is updated
@@ -105,11 +126,21 @@ const webpackConfig = merge(baseWebpackConfig, {
     // This instance extracts shared chunks from code splitted chunks and bundles them
     // in a separate chunk, similar to the vendor chunk
     // see: https://webpack.js.org/plugins/commons-chunk-plugin/#extra-async-commons-chunk
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'app',
-      async: 'vendor-async',
-      children: true,
-      minChunks: 3
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'app',
+    //   async: 'vendor-async',
+    //   children: true,
+    //   minChunks: 3
+    // }),
+    // assets-webpack-plugin
+    // https://github.com/kossnocorp/assets-webpack-plugin
+    new AssetsWebpackPlugin({
+      path: config.build.assetsRoot,
+      filename: 'webpack-chunks.json',
+      prettyPrint: true,
+      metadata: {
+        project: require('../package').name
+      }
     }),
 
     // copy custom static assets
@@ -117,7 +148,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       {
         from: path.resolve(__dirname, '../static'),
         to: config.build.assetsSubDirectory,
-        ignore: ['.*']
+        ignore: [ '.*', '**/_*/**' ]
       }
     ])
   ]
@@ -143,7 +174,12 @@ if (config.build.productionGzip) {
 
 if (config.build.bundleAnalyzerReport) {
   const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-  webpackConfig.plugins.push(new BundleAnalyzerPlugin())
+  webpackConfig.plugins.push(new BundleAnalyzerPlugin({
+    analyzerMode: 'static',
+    reportFilename: 'webpack-report.html',
+    generateStatsFile: true,
+    statsFilename: 'webpack-report.json'
+  }))
 }
 
 module.exports = webpackConfig
