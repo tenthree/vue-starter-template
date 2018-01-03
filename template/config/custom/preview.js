@@ -6,6 +6,7 @@ const routerMiddleware = require('../../build/middleware/router-middleware')
 const router404Middleware = require('../../build/middleware/router-404-middleware')
 const proxy = require('./proxy')
 const routes = require('./routes')
+const config = require('../')
 
 // lite-server
 // https://github.com/johnpapa/lite-server
@@ -36,8 +37,8 @@ module.exports = function (browsersync) {
   });
 
   return {
-    host: 'localhost',
-    port: 80,
+    host: config.dev.host,
+    port: config.dev.port,
     files: ['./dist/**/*'],
     server: {
       baseDir: './dist',
