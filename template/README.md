@@ -16,6 +16,12 @@ npm run build
 
 # build for production and view the bundle analyzer report
 npm run build --report
+
+# preview project distribution from build task
+npm run preview
+
+# compress project to zip backup file
+npm run backup
 {{#unit}}
 
 # run unit tests
