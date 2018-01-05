@@ -1,11 +1,11 @@
 # include all hidden files except the gitignore file
 .*
-!/.*ignore
-!/.*keep
-!/.*rc
-!/.*js
-!/.*json
-!/.*config
+!.*ignore
+!.*keep
+!.*rc
+!.*js
+!.*json
+!.*config
 
 # log files
 *.log*
