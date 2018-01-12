@@ -1,4 +1,4 @@
-# vue-webpack-boilerplate
+# vue-starter-template
 
 > A full-featured Webpack setup with hot-reload, lint-on-save, unit testing & css extraction.
 
@@ -15,7 +15,7 @@ This is a project template for [vue-cli](https://github.com/vuejs/vue-cli). **It
 
 ``` bash
 $ npm install -g vue-cli
-$ vue init webpack my-project
+$ vue init tenthree/vue-starter-template my-project
 $ cd my-project
 $ npm install
 $ npm run dev
@@ -24,7 +24,7 @@ $ npm run dev
 This will scaffold the project using the `master` branch. If you wish to use the latest version of the webpack template, do the following instead:
 
 ``` bash
-$ vue init webpack#develop my-project
+$ vue init tenthree/vue-starter-template#develop my-project
 ```
 
 :warning: **The develop branch is not considered stable and can contain bugs or not build at all, so use at your own risk.**
@@ -56,6 +56,12 @@ The development server will run on port 8080 by default. If that port is already
   - Works with one command out of the box:
     - Selenium and chromedriver dependencies automatically handled.
     - Automatically spawns the Selenium server.
+
+- `npm run preview`: Preview production on local with [lite-server](https://github.com/johnpapa/lite-server).
+  - Run the local server with proxy settings
+
+- `npm run backup`: Compress project source code into zip file with [node-archiver](https://github.com/archiverjs/node-archiver).
+  - Compress project source code (exclude node_modules) into zip file in "./backup" directory
 
 ### Fork It And Make Your Own
 

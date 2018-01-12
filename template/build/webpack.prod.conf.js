@@ -78,7 +78,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             filename: {{#if_or unit e2e}}process.env.NODE_ENV === 'testing'
               ? 'index.html'
               : {{/if_or}}`${entry}.html`,
-            template: `./src/entries/${entry}/index.html`,
+            template: `./src/entries/${entry}.html`,
             chunks: [ 'manifest', 'vendor', 'commons', entry ],
             inject: true,
             // minify: {

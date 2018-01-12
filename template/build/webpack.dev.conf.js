@@ -64,13 +64,13 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     ...(function () {
-      let defaultFile = path.resolve(__dirname, './html/default.html')
+      let defaultHtmlFile = path.resolve(__dirname, './html/default.html')
       return entries([])
         .reduce((pages, entry) => {
-          let sourceFile = path.resolve(__dirname, `../src/entries/${entry}/index.html`)
+          let sourceHtmlFile = path.resolve(__dirname, `../src/entries/${entry}.html`)
           pages.push(new HtmlWebpackPlugin({
             filename: `${entry}.html`,
-            template: !fs.existsSync(sourceFile) ? defaultFile : sourceFile,
+            template: !fs.existsSync(sourceHtmlFile) ? defaultHtmlFile : sourceHtmlFile,
             chunks: [entry],
             inject: true
           }))
