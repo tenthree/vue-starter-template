@@ -12,8 +12,8 @@ try {
   branch = rev.branch(),
   commit = rev.short();
 } catch (err) {
-  branch = '[!] Not a git repository';
-  commit = '[!] Not a git repository';
+  branch = '[!] Not a git repository'
+  commit = '[!] Not a git repository'
 }
 
 // [TIP] cssnano options: "discardComments"
