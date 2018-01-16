@@ -31,10 +31,10 @@ module.exports = function (browsersync) {
   }
   // browsersync init event
   browsersync.emitter.on('init', function () {
-    let instance = browsersync.instance;
+    let instance = browsersync.instance
     // add 404 custom template
-    instance.addMiddleware('*', router404Middleware('./build/html/404.html'));
-  });
+    instance.addMiddleware('*', router404Middleware('./build/html/404.html'))
+  })
 
   return {
     host: config.dev.host,

@@ -9,8 +9,8 @@ const pkg = require('../../package.json')
 // --------------------------------------------------
 let branch, commit
 try {
-  branch = rev.branch(),
-  commit = rev.short();
+  branch = rev.branch()
+  commit = rev.short()
 } catch (err) {
   branch = '[!] Not a git repository'
   commit = '[!] Not a git repository'
