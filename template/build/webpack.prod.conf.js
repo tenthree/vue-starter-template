@@ -13,6 +13,10 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const AssetsWebpackPlugin = require('assets-webpack-plugin')
 const entries = require('./helper/entries')
 const banner = require('../config/custom/banner')
+const prod = require('../config/custom/production')
+
+const scriptHashSuffix = !prod.scriptHash ? '' : '.[chunkhash:7]'
+const styleHashSuffix = !prod.styleHash ? '' : '.[contenthash:7]'
 
 const env = {{#if_or unit e2e}}process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -29,8 +33,8 @@ const webpackConfig = merge(baseWebpackConfig, {
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {
     path: config.build.assetsRoot,
-    filename: utils.assetsPath('js/[name].[chunkhash:7].js'),
-    chunkFilename: utils.assetsPath('js/[id].[chunkhash:7].js')
+    filename: utils.assetsPath(`js/[name]${scriptHashSuffix}.js`),
+    chunkFilename: utils.assetsPath(`js/[id]${scriptHashSuffix}.js`)
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -54,7 +58,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     }),
     // extract css into its own file
     new ExtractTextPlugin({
-      filename: utils.assetsPath('css/[name].[contenthash:7].css'),
+      filename: utils.assetsPath(`css/[name]${styleHashSuffix}.css`),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
       // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,

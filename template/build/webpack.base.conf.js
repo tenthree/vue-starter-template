@@ -4,6 +4,9 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 const entries = require('./helper/entries')
+const prod = require('../config/custom/production')
+
+const assetHashSuffix = !prod.assetHash ? '' : '.[hash:7]'
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -59,7 +62,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('img/[name].[hash:7].[ext]')
+          name: utils.assetsPath(`images/[name]${assetHashSuffix}.[ext]`)
         }
       },
       {
@@ -67,7 +70,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('media/[name].[hash:7].[ext]')
+          name: utils.assetsPath(`media/[name]${assetHashSuffix}.[ext]`)
         }
       },
       {
@@ -75,7 +78,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+          name: utils.assetsPath(`fonts/[name]${assetHashSuffix}.[ext]`)
         }
       }
     ]
