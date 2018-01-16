@@ -1,0 +1,21 @@
+// --------------------------------------------------
+// RWD media query generator
+// --------------------------------------------------
+@mixin rwd ($device) {
+  @media only screen and (#{$device}) {
+    @content;
+  }
+}
+
+// --------------------------------------------------
+// inject pseudo element ":before" for vertical-align
+// --------------------------------------------------
+@mixin use-vertical-align {
+  &:before {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 100%;
+    vertical-align: middle;
+  }
+}
