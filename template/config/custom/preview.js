@@ -18,16 +18,14 @@ const config = require('../')
 
 module.exports = function (browsersync) {
   // custom middleware collection
-  let customMiddlewares = {
-    0: null,// disable index = 0, default middleware = "connect-logger"
-    1: null,// disable index = 1, default middleware = "connect-history-api-fallback"
-    2: compressMiddleware(), // added gzip compressor
-    3: routerMiddleware(routes) //added custom router
-  }
+  let customMiddlewares = [
+    compressMiddleware(), // added gzip compressor
+    routerMiddleware(routes) //added custom router
+  ]
   // added multiple http-proxy-middleware settings
   let proxyBeginIndex = Object.keys(customMiddlewares)
   for (let pattern in proxy) {
-    customMiddlewares[++proxyBeginIndex] = httpProxyMiddleware(pattern, proxy[pattern])
+    customMiddlewares.push(httpProxyMiddleware(pattern, proxy[pattern]))
   }
   // browsersync init event
   browsersync.emitter.on('init', function () {
